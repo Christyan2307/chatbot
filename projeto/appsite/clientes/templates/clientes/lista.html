@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Clientes</title>
+</head>
+<body>
+    <h1>Clientes</h1>
+    <a href="{% url 'novo_cliente' %}">+ Novo Cliente</a>
+    <ul>
+        {% for cliente in clientes %}
+            <li>{{ cliente.nome }} - {{ cliente.telefone }} - {{ cliente.get_status_display }} 
+            {% if cliente.precisa_notificacao %} (aguardando notificação){% endif %}
+            </li>
+        {% empty %}
+            <li>Nenhum cliente cadastrado</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
