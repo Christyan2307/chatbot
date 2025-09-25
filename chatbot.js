@@ -3,7 +3,6 @@ const qrcode = require("qrcode-terminal");
 const mysql = require("mysql2/promise");
 
 // === DB ===
-const mysql = require("mysql2");
 
 const db = mysql.createPool({
   host: process.env.MYSQL_HOST || "127.0.0.1",
