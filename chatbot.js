@@ -3,13 +3,17 @@ const qrcode = require("qrcode-terminal");
 const mysql = require("mysql2/promise");
 
 // === DB ===
+const mysql = require("mysql2");
+
 const db = mysql.createPool({
-  host: process.env.DB_HOST || "127.0.0.1",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "root",
-  database: process.env.DB_NAME || "sistema_clientes",
-  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306
+  host: process.env.MYSQL_HOST || "127.0.0.1",
+  user: process.env.MYSQL_USER || "root",
+  password: process.env.MYSQL_PASSWORD || "root",
+  database: process.env.MYSQL_DATABASE || "sistema_clientes",
+  port: process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT) : 3306
 });
+
+module.exports = db;
 
 // util
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
