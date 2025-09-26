@@ -4,15 +4,15 @@ const mysql = require("mysql2/promise");
 
 // === DB ===
 const db = mysql.createPool({
-  host: process.env.MYSQLHOST || process.env.MYSQL_HOST || "127.0.0.1",
-  user: process.env.MYSQLUSER || process.env.MYSQL_USER || "root",
-  password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || "root",
-  database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || "sistema_clientes",
+  host: process.env.MYSQLHOST || process.env.MYSQL_HOST || process.env.MYSQL_URL || "127.0.0.1",
+  user: process.env.MYSQLUSER || process.env.MYSQL_USER,
+  password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || process.env.MYSQL_ROOT_PASSWORD,
+  database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE,
   port: process.env.MYSQLPORT ? parseInt(process.env.MYSQLPORT) : 3306
 });
 
-console.log("🔌 Tentando conectar no MySQL:", {
-  host: process.env.MYSQLHOST || process.env.MYSQL_HOST,
+console.log("🔌 Conectando ao MySQL com config:", {
+  host: process.env.MYSQLHOST || process.env.MYSQL_HOST || process.env.MYSQL_URL,
   port: process.env.MYSQLPORT,
   user: process.env.MYSQLUSER || process.env.MYSQL_USER,
   database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE
