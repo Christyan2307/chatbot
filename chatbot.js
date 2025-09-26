@@ -3,7 +3,6 @@ const qrcode = require("qrcode-terminal");
 const mysql = require("mysql2/promise");
 
 // === DB ===
-
 const db = mysql.createPool({
   host: process.env.MYSQL_HOST || "127.0.0.1",
   user: process.env.MYSQL_USER || "root",
@@ -12,7 +11,16 @@ const db = mysql.createPool({
   port: process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT) : 3306
 });
 
-module.exports = db;
+// Teste de conexão ao iniciar
+(async () => {
+  try {
+    const connection = await db.getConnection();
+    console.log("✅ Conectado ao MySQL!");
+    connection.release();
+  } catch (err) {
+    console.error("❌ Erro ao conectar ao MySQL:", err);
+  }
+})();
 
 // util
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -25,9 +33,7 @@ async function startBot() {
 
   const sock = makeWASocket({
     auth: state,
-    // evita baixar histórico completo (reduz chance de "Bad MAC"/"Invalid patch mac" em sessões novas)
     syncFullHistory: false,
-    // você pode deixar true se quiser aparecer online ao conectar
     markOnlineOnConnect: true,
   });
 
@@ -37,16 +43,19 @@ async function startBot() {
   sock.ev.on("connection.update", (update) => {
     const { connection, lastDisconnect, qr } = update;
 
+
     if (qr) {
-      qrcode.generate(qr, { small: true });
-      console.log("📲 Escaneie o QR Code acima com seu WhatsApp!");
-    }
+  // Gera uma URL do QR Code para abrir no navegador
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`;
+  console.log("📲 Escaneie o QR Code neste link:");
+  console.log(qrImageUrl);
+}
+
 
     if (connection === "open") {
       console.log("✅ Bot conectado no WhatsApp!");
       isReady = true;
 
-      // evita múltiplos timers em reconexões
       if (checkTimer) clearInterval(checkTimer);
       checkTimer = setInterval(() => enviarMensagensAutomaticas(sock), 3000);
     }
@@ -61,7 +70,6 @@ async function startBot() {
       const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
       console.log("Conexão fechada. Reconectar?", shouldReconnect, "| code:", statusCode);
 
-      // se deslogou do WhatsApp no celular, apague a pasta baileys_auth e pare aqui
       if (shouldReconnect) startBot();
     }
   });
@@ -99,7 +107,6 @@ async function startBot() {
             mensagem = `Olá ${cliente.nome}, seu agendamento foi cancelado. ❌`;
             break;
           default:
-            // se quiser ignorar status desconhecido
             continue;
         }
 
@@ -119,7 +126,7 @@ async function startBot() {
 
           await db.query("UPDATE clientes SET precisa_notificacao = 0 WHERE id = ?", [cliente.id]);
 
-          await delay(1500); // pequeno atraso para não flodar
+          await delay(1500);
         } catch (err) {
           console.error(`❌ Erro ao enviar para ${cliente.nome} (${jid}):`, err?.message || err);
         }
@@ -131,3 +138,5 @@ async function startBot() {
 }
 
 startBot();
+
+module.exports = db; // exporta a pool para outros arquivos se necessário
