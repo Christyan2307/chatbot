@@ -3,21 +3,24 @@ const qrcode = require("qrcode-terminal");
 const mysql = require("mysql2/promise");
 
 // === DB ===
+
 const db = mysql.createPool({
-  host: process.env.MYSQLHOST || process.env.MYSQL_HOST || process.env.MYSQL_URL || "127.0.0.1",
-  user: process.env.MYSQLUSER || process.env.MYSQL_USER,
-  password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || process.env.MYSQL_ROOT_PASSWORD,
-  database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE,
-  port: process.env.MYSQLPORT ? parseInt(process.env.MYSQLPORT) : 3306
+  host: process.env.MYSQLHOST || "127.0.0.1",
+  port: process.env.MYSQLPORT ? parseInt(process.env.MYSQLPORT) : 3306,
+  user: process.env.MYSQLUSER || "root",
+  password: process.env.MYSQLPASSWORD || "root",
+  database: process.env.MYSQLDATABASE || "sistema_clientes"
 });
 
 console.log("🔌 Conectando ao MySQL com config:", {
-  host: process.env.MYSQLHOST || process.env.MYSQL_HOST || process.env.MYSQL_URL,
-  port: process.env.MYSQLPORT,
-  user: process.env.MYSQLUSER || process.env.MYSQL_USER,
-  database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE
+  host: process.env.MYSQLHOST || "127.0.0.1",
+  port: process.env.MYSQLPORT || 3306,
+  user: process.env.MYSQLUSER || "root",
+  password: process.env.MYSQLPASSWORD || "root",
+  database: process.env.MYSQLDATABASE || "sistema_clientes"
 });
 
+module.exports = db;
 // Teste de conexão ao iniciar
 (async () => {
   try {
